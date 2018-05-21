@@ -24,7 +24,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # Clang
     set(CXX_MODULES_FLAGS -fmodules-ts)
     set(CXX_MODULES_EXT pcm)
-    set(CXX_MODULES_CREATE_FLAGS -fmodules-ts --precompile)
+    set(CXX_MODULES_CREATE_FLAGS -fmodules-ts -x c++-module --precompile)
     set(CXX_MODULES_USE_FLAG -fmodule-file)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # GCC

@@ -9,7 +9,7 @@ include(../CXXModules.cmake)
 # Same as add_library but also creates interface files
 # and add required flags for current compiler
 add_module_library(hello_world
-    hello_world.cppm
+    hello_world.cpp
 )
 
 # Create executable target
