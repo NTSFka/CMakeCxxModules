@@ -2,10 +2,14 @@
 
 CMake module for C++ modules TS projects.
 
+## Warning
+
+This is an experimental CMake module which uses current implementation of C++ Modules TS. There are a lot of issues and shouldn't be used in production code.
+
 ## Supported compilers
 
  * Clang 7
- * [WIP] MSVC 
+ * MSVC
  * [WIP] GCC
 
 ## Usage
@@ -15,13 +19,13 @@ Download `CXXModules.cmake` file and include it into your CMake project.
 The basic usage is put the file in same directory as `CMakeLists.txt`:
 
 ```cmake
-include(CMakeModules.cmake)
+include(CXXModules.cmake)
 ```
 
 Alternatively the file can stored in a path referenced in `CMAKE_MODULE_PATH` so you can only type:
 
 ```cmake
-include(CMakeModules)
+include(CXXModules)
 ```
 
 Now you have access to special functions which enable C++ modules support.
@@ -46,7 +50,7 @@ include(CXXModules.cmake)
 # Same as add_library but also creates interface files
 # and add required flags for current compiler
 add_module_library(hello_world
-    hello_world.cppm
+    hello_world.cpp
 )
 
 # Create executable target
