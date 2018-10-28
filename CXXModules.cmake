@@ -25,13 +25,18 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CXX_MODULES_FLAGS -fmodules-ts)
     set(CXX_MODULES_EXT pcm)
     set(CXX_MODULES_CREATE_FLAGS -fmodules-ts -x c++-module --precompile)
-    set(CXX_MODULES_USE_FLAG -fmodule-file)
+    set(CXX_MODULES_USE_FLAG -fmodule-file=)
+    set(CXX_MODULES_OUTPUT_FLAG -o)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # GCC
     message(FATAL_ERROR "GCC is not supported yet")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # MSVC
-    message(FATAL_ERROR "Visual Compiler is not supported yet")
+    set(CXX_MODULES_FLAGS /experimental:module /module:interface)
+    set(CXX_MODULES_EXT ifc)
+    set(CXX_MODULES_CREATE_FLAGS -c)
+    set(CXX_MODULES_USE_FLAG /module:reference )
+    set(CXX_MODULES_OUTPUT_FLAG /module:output)
 else ()
     message(FATAL_ERROR "Unsupported compiler")
 endif ()
@@ -132,7 +137,7 @@ function (add_module_library TARGET)
         set(_i_file ${CMAKE_CURRENT_SOURCE_DIR}/${_source})
 
         # TODO: CXX flags might be different
-        set(_cmd ${CMAKE_CXX_COMPILER} $<TARGET_PROPERTY:${TARGET},COMPILE_OPTIONS> ${CXX_MODULES_CREATE_FLAGS} ${_i_file} -o ${_o_file})
+        set(_cmd ${CMAKE_CXX_COMPILER} "$<JOIN:$<TARGET_PROPERTY:${TARGET},COMPILE_OPTIONS>,\t>" ${CXX_MODULES_CREATE_FLAGS} ${_i_file} ${CXX_MODULES_OUTPUT_FLAG} ${_o_file})
 
         # Create interface build target
         add_custom_target(${_o_file}
@@ -177,7 +182,7 @@ function (target_link_module_libraries TARGET)
             add_dependencies(${TARGET} ${_file})
 
             # TODO: might be different on different compilers
-            target_compile_options(${TARGET} PRIVATE ${CXX_MODULES_USE_FLAG}=${_file})
+            target_compile_options(${TARGET} PRIVATE ${CXX_MODULES_USE_FLAG}${_file})
         endforeach ()
     endforeach ()
 
