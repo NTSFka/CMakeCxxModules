@@ -22,6 +22,7 @@
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # Clang
+    set(CXX_MODULES_CHECK -fmodules-ts)
     set(CXX_MODULES_FLAGS -fmodules-ts)
     set(CXX_MODULES_EXT pcm)
     set(CXX_MODULES_CREATE_FLAGS -fmodules-ts -x c++-module --precompile)
@@ -32,6 +33,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     message(FATAL_ERROR "GCC is not supported yet")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # MSVC
+    set(CXX_MODULES_CHECK /experimental:module)
     set(CXX_MODULES_FLAGS /experimental:module /module:interface)
     set(CXX_MODULES_EXT ifc)
     set(CXX_MODULES_CREATE_FLAGS -c)
@@ -48,7 +50,7 @@ include(CheckCXXCompilerFlag)
 include(CMakePushCheckState)
 
 # Check if used compiler version supports modules
-check_cxx_compiler_flag(${CXX_MODULES_FLAGS} CXX_MODULES)
+check_cxx_compiler_flag(${CXX_MODULES_CHECK} CXX_MODULES)
 
 # ########################################################################## #
 
