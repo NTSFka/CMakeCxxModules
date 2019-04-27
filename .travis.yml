@@ -34,3 +34,4 @@ before_install:
 script:
     - cmake -Bbuild -Hexample
     - cmake --build build
+    - ./build/main
