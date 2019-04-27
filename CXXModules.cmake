@@ -97,7 +97,7 @@ endfunction ()
 ##
 ## Create C++ module library.
 ##
-## Sets target property CXX_INTERFACE_FILES
+## Sets target property CXX_MODULES_INTERFACE_FILES and CXX_MODULES_INTERFACE_TARGETS
 ##
 function (add_module_library TARGET)
     _check_cxx_modules_support()
@@ -132,6 +132,7 @@ function (add_module_library TARGET)
     target_enable_cxx_modules(${TARGET})
 
     set(_interface_files)
+    set(_interface_targets)
 
     # Create targets for interface files
     foreach (_source ${_sources})
@@ -141,19 +142,42 @@ function (add_module_library TARGET)
         # TODO: CXX flags might be different
         set(_cmd ${CMAKE_CXX_COMPILER} "$<JOIN:$<TARGET_PROPERTY:${TARGET},COMPILE_OPTIONS>,\t>" ${CXX_MODULES_CREATE_FLAGS} ${_i_file} ${CXX_MODULES_OUTPUT_FLAG} ${_o_file})
 
+        get_filename_component(_o_file_dir ${_o_file} DIRECTORY)
+
+        if (_o_file_dir)
+            file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_o_file_dir})
+        endif()
+
         # Create interface build target
-        add_custom_target(${_o_file}
+        add_custom_command(
+            OUTPUT ${_o_file}
             COMMAND ${_cmd}
             DEPENDS ${_i_file}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         )
 
+        # Replace directory separators with something else
+        string(REPLACE "/" "__" _o_file_target ${_o_file})
+        string(PREPEND _o_file_target "module_")
+
+        # Create interface build target
+        add_custom_target(${_o_file_target}
+            COMMAND ${_cmd}
+            DEPENDS ${_o_file}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+
         list(APPEND _interface_files ${_o_file})
+        list(APPEND _interface_targets ${_o_file_target})
     endforeach ()
 
     # Store property with interface files
     set_target_properties(${TARGET}
-        PROPERTIES CXX_INTERFACE_FILES "${_interface_files}"
+        PROPERTIES CXX_MODULES_INTERFACE_FILES "${_interface_files}"
+    )
+
+    set_target_properties(${TARGET}
+        PROPERTIES CXX_MODULES_INTERFACE_TARGETS "${_interface_targets}"
     )
 endfunction ()
 
@@ -162,7 +186,7 @@ endfunction ()
 ##
 ## Link a (C++ module) library to (C++ module) target.
 ##
-## Sets target property CXX_INTERFACE_FILES
+## Use target property CXX_MODULES_INTERFACE_FILES and CXX_MODULES_INTERFACE_TARGETS
 ##
 function (target_link_module_libraries TARGET)
     _check_cxx_modules_support()
@@ -178,11 +202,16 @@ function (target_link_module_libraries TARGET)
         endif ()
 
         # Get interface files from library
-        get_target_property(_interface_files ${_arg} CXX_INTERFACE_FILES)
+        get_target_property(_interface_targets ${_arg} CXX_MODULES_INTERFACE_TARGETS)
+
+        foreach (_target ${_interface_targets})
+            add_dependencies(${TARGET} ${_target})
+        endforeach ()
+
+        # Get interface files from library
+        get_target_property(_interface_files ${_arg} CXX_MODULES_INTERFACE_FILES)
 
         foreach (_file ${_interface_files})
-            add_dependencies(${TARGET} ${_file})
-
             # TODO: might be different on different compilers
             target_compile_options(${TARGET} PRIVATE ${CXX_MODULES_USE_FLAG}${_file})
         endforeach ()
