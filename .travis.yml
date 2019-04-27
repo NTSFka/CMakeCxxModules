@@ -5,8 +5,8 @@ addons:
     packages:
       - cmake-data
       - cmake
-      - clang
+      - clang-7
 
 script:
-    - cmake -Bbuild -H.
+    - cmake -Bbuild -Hexample
     - cmake --build build
