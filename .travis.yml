@@ -1,28 +1,11 @@
 dist: xenial
 
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - clang++-6
-      env:
-        - CC=clang-6
-        - CXX=clang++-6
-
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - clang++-7
-      env:
-        - CC=clang-7
-        - CXX=clang++-7
+addons:
+  apt:
+    packages:
+      - cmake-data
+      - cmake
+      - clang
 
 script:
     - cmake -Bbuild -H.
