@@ -16,8 +16,7 @@ matrix:
           packages:
             - clang-7
       env:
-        - CC=clang-7
-        - CXX=clang++-7
+        - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
 
     - os: linux
       addons:
@@ -27,8 +26,10 @@ matrix:
           packages:
             - clang-8
       env:
-        - CC=clang-8
-        - CXX=clang++-8
+        - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
+
+before_install:
+    - eval "${MATRIX_EVAL}"
 
 script:
     - cmake -Bbuild -Hexample
