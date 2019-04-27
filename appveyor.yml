@@ -13,4 +13,4 @@ build_script:
   - cmake --build build
 
 test_script:
-  - .\build\main.exe
+  - build\Debug\main.exe
