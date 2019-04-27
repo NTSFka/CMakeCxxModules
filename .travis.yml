@@ -1,0 +1,37 @@
+dist: xenial
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - cmake
+
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-7
+          packages:
+            - clang-7
+      env:
+        - MATRIX_EVAL="CC=clang-7 && CXX=clang++-7"
+
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-8
+          packages:
+            - clang-8
+      env:
+        - MATRIX_EVAL="CC=clang-8 && CXX=clang++-8"
+
+before_install:
+    - eval "${MATRIX_EVAL}"
+
+script:
+    - cmake -Bbuild -Hexample
+    - cmake --build build
+    - ./build/main
