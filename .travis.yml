@@ -1,4 +1,5 @@
 dist: xenial
+language: cpp
 
 addons:
   apt:
