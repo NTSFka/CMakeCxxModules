@@ -22,12 +22,23 @@
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     # Clang
-    set(CXX_MODULES_CHECK -fmodules-ts)
-    set(CXX_MODULES_FLAGS -fmodules-ts)
-    set(CXX_MODULES_EXT pcm)
-    set(CXX_MODULES_CREATE_FLAGS -fmodules-ts -x c++-module --precompile)
-    set(CXX_MODULES_USE_FLAG -fmodule-file=)
-    set(CXX_MODULES_OUTPUT_FLAG -o)
+    if ("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+        # Clang-cl
+        set(CXX_MODULES_CHECK -Xclang -fmodules-ts)
+        set(CXX_MODULES_FLAGS -Xclang -fmodules-ts)
+        set(CXX_MODULES_EXT pcm)
+        set(CXX_MODULES_CREATE_FLAGS -Xclang "-x c++-module" -Xclang --precompile)
+        set(CXX_MODULES_USE_FLAG "SHELL:-Xclang -fmodule-file=")
+        set(CXX_MODULES_OUTPUT_FLAG -o)
+    else ()
+        # Standard Clang
+        set(CXX_MODULES_CHECK -fmodules-ts)
+        set(CXX_MODULES_FLAGS -fmodules-ts)
+        set(CXX_MODULES_EXT pcm)
+        set(CXX_MODULES_CREATE_FLAGS -fmodules-ts -x c++-module --precompile)
+        set(CXX_MODULES_USE_FLAG -fmodule-file=)
+        set(CXX_MODULES_OUTPUT_FLAG -o)
+    endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # GCC
     message(FATAL_ERROR "GCC is not supported yet")
