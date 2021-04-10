@@ -213,7 +213,7 @@ function (target_link_module_libraries TARGET)
 
         foreach (_file ${_interface_files})
             # TODO: might be different on different compilers
-            target_compile_options(${TARGET} PRIVATE ${CXX_MODULES_USE_FLAG}${_file})
+            target_compile_options(${TARGET} PRIVATE ${CXX_MODULES_USE_FLAG}${CMAKE_CURRENT_BINARY_DIR}/${_file})
         endforeach ()
     endforeach ()
 
